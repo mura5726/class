@@ -1,22 +1,24 @@
 ## plotting
+# install.packages("ggplot2")
 library(ggplot2)
 ## ROC
+# install.packages("pROC")
 library(pROC)
 ## Load nonrandom for PS matching
+# install.packages("nonrandom")
 library(nonrandom)
 ## Load Matching for PS matching
+# install.packages("Matching")
 library(Matching)
 ## Load sandwich package for robust sandwich covariance matrix estimators
+# install.packages("sandwich")
 library(sandwich)
 ## Load lmtest package for coeftest
+# install.packages("lmtest")
 library(lmtest)
 ## Load geepack for robust sandwich covariance matrix estimators
+# install.packages("geepack")
 library(geepack)
-
-## Right heart cath dataset
-rhc <- read.csv("http://biostat.mc.vanderbilt.edu/wiki/pub/Main/DataSets/rhc.csv")
-## first 6 rows
-head(rhc)
 
 ## Show outcome (death) and exposure (swang1)
 addmargins(table(rhc[,c("swang1", "death")]))
@@ -78,6 +80,8 @@ GetConfInt <- function(obj) {
   matRes
 }
 
+#「通常の」ロジスティック回帰を実行する
+
 ## Crude analysis (confounded!)
 glmCrude <- glm(formula = death ~ swang1,
                 family  = binomial(link = "logit"),
@@ -91,6 +95,7 @@ glmFull <- glm(formula =  death ~ swang1 + age + sex + race + edu + income + nin
 ## Show result
 GetConfInt(coef(summary(glmFull)))
 
+#傾向スコアモデルを構築する
 ## PS model
 psModel <- glm(formula = swang1 ~ age + sex + race + edu + income + ninsclas + cat1 + das2d3pc + dnr1 + ca + surv2md1 + aps1 + scoma1 + wtkilo1 + temp1 + meanbp1 + resp1 + hrt1 + pafi1 + paco21 + ph1 + wblc1 + hema1 + sod1 + pot1 + crea1 + bili1 + alb1 + resp + card + neuro + gastr + renal + meta + hema + seps + trauma + ortho + cardiohx + chfhx + dementhx + psychhx + chrpulhx + renalhx + liverhx + gibledhx + malighx + immunhx + transhx + amihx,
                family  = binomial(link = "logit"),
@@ -144,5 +149,3 @@ plotBase <- ggplot(data = dfData,
 ## Plot with total
 plotOrig <- layer(geom = "line")
 plotBase + plotOrig
-warnings()
-search()
